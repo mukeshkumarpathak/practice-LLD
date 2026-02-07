@@ -5,28 +5,30 @@ enum VehicleType{
   CAR, BIKE
 };
 
+class Vehicle;
+
 class Slot{
   private:
     int slotId;
     bool availability;
-    int vehicleId;
+    Vehicle *parkedVehicle;
     VehicleType vehicleType;
   public:
     Slot(){}
     Slot(int slotId, VehicleType vehicleType){
       this->slotId = slotId;
       this->availability = true;
-      this->vehicleId = -1;
+      this->parkedVehicle = NULL;
       this->vehicleType = vehicleType;  
     }
     
     virtual int getSlotId() { return slotId; }
     virtual int getAvailability() { return availability; }
-    virtual int getVehicleId() { return vehicleId; }
+    virtual Vehicle* getParkedVehicle() { return parkedVehicle; }
     virtual int getVehicleType() { return vehicleType; }
 
     virtual void setAvailability(bool availability) { this->availability=availability; }
-    virtual void setVehicleId(int vehicleId) { this->vehicleId=vehicleId; }
+    virtual void setParkedVehicle(Vehicle *parkedVehicle) { this->parkedVehicle=parkedVehicle; }
 
     
 };
@@ -82,11 +84,10 @@ class ParkingLotImpl: public ParkingLot{
 
     virtual void park(Vehicle *&vehicle){
       VehicleType vehicleType =  vehicle->getVehicleType();
-      int vehicleId = vehicle->getVehicleId();
       for(int i=0; i<slots.size(); i++){
         if((slots[i]->getVehicleType()==vehicleType) && (slots[i]->getAvailability())){
           slots[i]->setAvailability(false);
-          slots[i]->setVehicleId(vehicleId);
+          slots[i]->setParkedVehicle(vehicle);
           vehicle->setSlotId(slots[i]->getSlotId());
           cout<<"Parked\n";
           return;
@@ -103,7 +104,7 @@ class ParkingLotImpl: public ParkingLot{
       for(int i=0; i<slots.size(); i++){
         if(slots[i]->getSlotId() == slotId){
           slots[i]->setAvailability(true);
-          slots[i]->setVehicleId(-1);
+          slots[i]->setParkedVehicle(NULL);
           vehicle->setSlotId(-1);
           cout<<"Removed\n";
           return;
