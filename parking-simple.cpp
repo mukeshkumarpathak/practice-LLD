@@ -33,8 +33,6 @@ class Slot{
 class Vehicle{
   public:
     virtual int getVehicleId()=0;
-    virtual int getSlotId()=0;
-    virtual void setSlotId(int slotId)=0;
     virtual VehicleType getVehicleType()=0;
 };
 
@@ -43,8 +41,6 @@ class Car: public Vehicle{
   public:
     Car(int id){ this->id=id; this->slotId=-1; }
     virtual int getVehicleId() { return id; }
-    virtual int getSlotId() { return slotId; }
-    virtual void setSlotId(int slotId) { this->slotId=slotId; }
     virtual VehicleType getVehicleType() { return (VehicleType::CAR); }
 };
 class Bike: public Vehicle{
@@ -52,8 +48,6 @@ class Bike: public Vehicle{
   public:
     Bike(int id){ this->id=id; this->slotId=-1; }
     virtual int getVehicleId() { return id; }
-    virtual int getSlotId() { return slotId; }
-    virtual void setSlotId(int slotId) { this->slotId=slotId; }    
     virtual VehicleType getVehicleType() { return (VehicleType::BIKE); }
 };
 
@@ -83,7 +77,6 @@ class ParkingLotImpl: public ParkingLot{
       for(int i=0; i<slots.size(); i++){
         if((slots[i]->getVehicleType()==vehicleType) && ((slots[i]->getParkedVehicle())==NULL)){
           slots[i]->setParkedVehicle(vehicle);
-          vehicle->setSlotId(slots[i]->getSlotId());
           cout<<"Parked\n";
           return;
         }  
@@ -93,18 +86,15 @@ class ParkingLotImpl: public ParkingLot{
     }
 
     virtual void remove(Vehicle *&vehicle){
-      int slotId = vehicle->getSlotId();
-      if(slotId==-1) { cout<<"this Vehicle hadn't any slot earlier"; return; }
 
       for(int i=0; i<slots.size(); i++){
-        if(slots[i]->getSlotId() == slotId){
+        if(slots[i]->getParkedVehicle() == vehicle){
           slots[i]->setParkedVehicle(NULL);
-          vehicle->setSlotId(-1);
           cout<<"Removed\n";
           return;
         } 
       }
-      cout<<"Invalid Slot\n";
+      cout<<"Invalid Vehicle\n";
       return;
     }
 
