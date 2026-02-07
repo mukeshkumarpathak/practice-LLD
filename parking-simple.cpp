@@ -43,7 +43,7 @@ class Vehicle{
 class Car: public Vehicle{
   int id, slotId;
   public:
-    Car(int id){ this->id=id; }
+    Car(int id){ this->id=id; this->slotId=-1; }
     virtual int getVehicleId() { return id; }
     virtual int getSlotId() { return slotId; }
     virtual void setSlotId(int slotId) { this->slotId=slotId; }
@@ -52,7 +52,7 @@ class Car: public Vehicle{
 class Bike: public Vehicle{
   int id, slotId;
   public:
-    Bike(int id){ this->id=id; }
+    Bike(int id){ this->id=id; this->slotId=-1; }
     virtual int getVehicleId() { return id; }
     virtual int getSlotId() { return slotId; }
     virtual void setSlotId(int slotId) { this->slotId=slotId; }    
@@ -62,9 +62,9 @@ class Bike: public Vehicle{
 class ParkingLot{
   public:
     virtual void setSlots(int n, VehicleType vehicleType)=0;
-    virtual void park(Vehicle *&Vehicle)=0;
-    // virtual void remove(Vehicle *Vehicle)=0;
-    // virtual void showAvailableSlots()=0;
+    virtual void park(Vehicle *&vehicle)=0;
+    virtual void remove(Vehicle *&vehicle)=0;
+    virtual void showAvailableSlots(VehicleType vehicleType)=0;
 };
 
 class ParkingLotImpl: public ParkingLot{
@@ -83,7 +83,6 @@ class ParkingLotImpl: public ParkingLot{
     virtual void park(Vehicle *&vehicle){
       VehicleType vehicleType =  vehicle->getVehicleType();
       int vehicleId = vehicle->getVehicleId();
-      int ind=-1;
       for(int i=0; i<slots.size(); i++){
         if((slots[i]->getVehicleType()==vehicleType) && (slots[i]->getAvailability())){
           slots[i]->setAvailability(false);
@@ -96,6 +95,39 @@ class ParkingLotImpl: public ParkingLot{
       cout<<"No Slots are Available\n";
       return;
     }
+
+    virtual void remove(Vehicle *&vehicle){
+      int slotId = vehicle->getSlotId();
+      if(slotId==-1) { cout<<"this Vehicle hadn't any slot earlier"; return; }
+
+      for(int i=0; i<slots.size(); i++){
+        if(slots[i]->getSlotId() == slotId){
+          slots[i]->setAvailability(true);
+          slots[i]->setVehicleId(-1);
+          vehicle->setSlotId(-1);
+          cout<<"Removed\n";
+          return;
+        } 
+      }
+      cout<<"Invalid Slot\n";
+      return;
+    }
+
+    virtual void showAvailableSlots(VehicleType vehicleType){
+      cout<<"Available Slots Are - ";
+      int c=0;
+      for(int i=0; i<slots.size(); i++){
+        if((slots[i]->getVehicleType()==vehicleType) && (slots[i]->getAvailability())){
+          cout<<"  "<<slots[i]->getSlotId()<<" ";
+          c++;
+        }      
+      }
+
+      if(c==0){
+        cout<<"No Slots are Available ";
+      }
+      return;
+  }
     
 
 };
@@ -105,8 +137,15 @@ int main(){
   parkingLot->setSlots(4, VehicleType::CAR);
   parkingLot->setSlots(8, VehicleType::BIKE);
 
-  Vehicle *mkpvehicle = new Car(81416);
-  parkingLot->park(mkpvehicle);
+  // Vehicle *mkpvehicle = new Car(81416);
+  // parkingLot->park(mkpvehicle);
+
+  // parkingLot->remove(mkpvehicle);
+  // Vehicle *mkpvehicle2 = new Car(81416);
+  // parkingLot->park(mkpvehicle2);  
+  
+  // parkingLot->showAvailableSlots(VehicleType::CAR);
+
   return 0;
 }
 
