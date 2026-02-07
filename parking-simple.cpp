@@ -46,8 +46,8 @@ class Car: public Vehicle{
     Car(int id){ this->id=id; }
     virtual int getVehicleId() { return id; }
     virtual int getSlotId() { return slotId; }
-    virtual int setSlotId(int slotId) { this->slotId=slotId; }
-    virtual VehicleType getVehicleId() { return (VehicleType::CAR); }
+    virtual void setSlotId(int slotId) { this->slotId=slotId; }
+    virtual VehicleType getVehicleType() { return (VehicleType::CAR); }
 };
 class Bike: public Vehicle{
   int id, slotId;
@@ -55,16 +55,16 @@ class Bike: public Vehicle{
     Bike(int id){ this->id=id; }
     virtual int getVehicleId() { return id; }
     virtual int getSlotId() { return slotId; }
-    virtual int setSlotId(int slotId) { this->slotId=slotId; }    
-    virtual VehicleType getVehicleId() { return (VehicleType::BIKE); }
+    virtual void setSlotId(int slotId) { this->slotId=slotId; }    
+    virtual VehicleType getVehicleType() { return (VehicleType::BIKE); }
 };
 
 class ParkingLot{
   public:
     virtual void setSlots(int n, VehicleType vehicleType)=0;
-    virtual void park(Vehicle *Vehicle)=0;
-    virtual void remove(Vehicle *Vehicle)=0;
-    virtual void showAvailableSlots()=0;
+    virtual void park(Vehicle *&Vehicle)=0;
+    // virtual void remove(Vehicle *Vehicle)=0;
+    // virtual void showAvailableSlots()=0;
 };
 
 class ParkingLotImpl: public ParkingLot{
