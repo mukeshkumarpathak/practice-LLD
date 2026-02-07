@@ -5,15 +5,15 @@ enum VehicleType{
   CAR, BIKE
 };
 
-class Slots{
+class Slot{
   private:
     int slotId;
     bool availability;
     int vehicleId;
     VehicleType vehicleType;
   public:
-    Slots(){}
-    Slots(int slotId, VehicleType vehicleType){
+    Slot(){}
+    Slot(int slotId, VehicleType vehicleType){
       this->slotId = slotId;
       this->availability = true;
       this->vehicleId = -1;
@@ -24,6 +24,10 @@ class Slots{
     virtual int getAvailability() { return availability; }
     virtual int getVehicleId() { return vehicleId; }
     virtual int getVehicleType() { return vehicleType; }
+
+    virtual void setAvailability(bool availability) { this->availability=availability; }
+    virtual void setVehicleId(int vehicleId) { this->vehicleId=vehicleId; }
+
     
 };
 
@@ -31,32 +35,79 @@ class Slots{
 class Vehicle{
   public:
     virtual int getVehicleId()=0;
+    virtual int getSlotId()=0;
+    virtual void setSlotId(int slotId)=0;
     virtual VehicleType getVehicleType()=0;
 };
 
-class Car: Vehicle{
-  int id;
+class Car: public Vehicle{
+  int id, slotId;
   public:
     Car(int id){ this->id=id; }
     virtual int getVehicleId() { return id; }
+    virtual int getSlotId() { return slotId; }
+    virtual int setSlotId(int slotId) { this->slotId=slotId; }
     virtual VehicleType getVehicleId() { return (VehicleType::CAR); }
 };
-class Bike: Vehicle{
-  int id;
+class Bike: public Vehicle{
+  int id, slotId;
   public:
     Bike(int id){ this->id=id; }
     virtual int getVehicleId() { return id; }
+    virtual int getSlotId() { return slotId; }
+    virtual int setSlotId(int slotId) { this->slotId=slotId; }    
     virtual VehicleType getVehicleId() { return (VehicleType::BIKE); }
 };
 
 class ParkingLot{
   public:
+    virtual void setSlots(int n, VehicleType vehicleType)=0;
     virtual void park(Vehicle *Vehicle)=0;
     virtual void remove(Vehicle *Vehicle)=0;
     virtual void showAvailableSlots()=0;
 };
 
+class ParkingLotImpl: public ParkingLot{
+    vector<Slot*> slots;
+  public:
+    ParkingLotImpl(){
+    }
+    
+    virtual void setSlots(int n, VehicleType vehicleType){
+      for(int i=0; i<n; i++){
+        Slot *slot = new Slot(slots.size()+1, vehicleType);
+        slots.push_back(slot);
+      }        
+    }
 
+    virtual void park(Vehicle *&vehicle){
+      VehicleType vehicleType =  vehicle->getVehicleType();
+      int vehicleId = vehicle->getVehicleId();
+      int ind=-1;
+      for(int i=0; i<slots.size(); i++){
+        if((slots[i]->getVehicleType()==vehicleType) && (slots[i]->getAvailability())){
+          slots[i]->setAvailability(false);
+          slots[i]->setVehicleId(vehicleId);
+          vehicle->setSlotId(slots[i]->getSlotId());
+          cout<<"Parked\n";
+          return;
+        }  
+      }
+      cout<<"No Slots are Available\n";
+      return;
+    }
+    
 
+};
+
+int main(){
+  ParkingLot *parkingLot = new ParkingLotImpl();
+  parkingLot->setSlots(4, VehicleType::CAR);
+  parkingLot->setSlots(8, VehicleType::BIKE);
+
+  Vehicle *mkpvehicle = new Car(81416);
+  parkingLot->park(mkpvehicle);
+  return 0;
+}
 
 
